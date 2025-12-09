@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.FeedbacksMapper">
+    
+    <resultMap type="Feedbacks" id="FeedbacksResult">
+        <result property="feedbackId"    column="feedback_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="cinemaId"    column="cinema_id"    />
+        <result property="movieId"    column="movie_id"    />
+        <result property="content"    column="content"    />
+        <result property="rating"    column="rating"    />
+        <result property="feedbackTime"    column="feedback_time"    />
+    </resultMap>
+
+    <sql id="selectFeedbacksVo">
+        select feedback_id, user_id, cinema_id, movie_id, content, rating, feedback_time from feedbacks
+    </sql>
+
+    <select id="selectFeedbacksList" parameterType="Feedbacks" resultMap="FeedbacksResult">
+        <include refid="selectFeedbacksVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="cinemaId != null "> and cinema_id = #{cinemaId}</if>
+            <if test="movieId != null "> and movie_id = #{movieId}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="rating != null "> and rating = #{rating}</if>
+            <if test="feedbackTime != null "> and feedback_time = #{feedbackTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectFeedbacksByFeedbackId" parameterType="Long" resultMap="FeedbacksResult">
+        <include refid="selectFeedbacksVo"/>
+        where feedback_id = #{feedbackId}
+    </select>
+
+    <insert id="insertFeedbacks" parameterType="Feedbacks" useGeneratedKeys="true" keyProperty="feedbackId">
+        insert into feedbacks
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="cinemaId != null">cinema_id,</if>
+            <if test="movieId != null">movie_id,</if>
+            <if test="content != null">content,</if>
+            <if test="rating != null">rating,</if>
+            <if test="feedbackTime != null">feedback_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="cinemaId != null">#{cinemaId},</if>
+            <if test="movieId != null">#{movieId},</if>
+            <if test="content != null">#{content},</if>
+            <if test="rating != null">#{rating},</if>
+            <if test="feedbackTime != null">#{feedbackTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFeedbacks" parameterType="Feedbacks">
+        update feedbacks
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="cinemaId != null">cinema_id = #{cinemaId},</if>
+            <if test="movieId != null">movie_id = #{movieId},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="rating != null">rating = #{rating},</if>
+            <if test="feedbackTime != null">feedback_time = #{feedbackTime},</if>
+        </trim>
+        where feedback_id = #{feedbackId}
+    </update>
+
+    <delete id="deleteFeedbacksByFeedbackId" parameterType="Long">
+        delete from feedbacks where feedback_id = #{feedbackId}
+    </delete>
+
+    <delete id="deleteFeedbacksByFeedbackIds" parameterType="String">
+        delete from feedbacks where feedback_id in 
+        <foreach item="feedbackId" collection="array" open="(" separator="," close=")">
+            #{feedbackId}
+        </foreach>
+    </delete>
+</mapper>

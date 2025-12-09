@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.HallsMapper">
+    
+    <resultMap type="Halls" id="HallsResult">
+        <result property="hallId"    column="hall_id"    />
+        <result property="cinemaId"    column="cinema_id"    />
+        <result property="capacity"    column="capacity"    />
+        <result property="seatLayout"    column="seat_layout"    />
+        <result property="hallType"    column="hall_type"    />
+        <result property="facilities"    column="facilities"    />
+    </resultMap>
+
+    <sql id="selectHallsVo">
+        select hall_id, cinema_id, capacity, seat_layout, hall_type, facilities from halls
+    </sql>
+
+    <select id="selectHallsList" parameterType="Halls" resultMap="HallsResult">
+        <include refid="selectHallsVo"/>
+        <where>  
+            <if test="cinemaId != null "> and cinema_id = #{cinemaId}</if>
+            <if test="capacity != null "> and capacity = #{capacity}</if>
+            <if test="seatLayout != null  and seatLayout != ''"> and seat_layout = #{seatLayout}</if>
+            <if test="hallType != null  and hallType != ''"> and hall_type = #{hallType}</if>
+            <if test="facilities != null  and facilities != ''"> and facilities = #{facilities}</if>
+        </where>
+    </select>
+    
+    <select id="selectHallsByHallId" parameterType="Long" resultMap="HallsResult">
+        <include refid="selectHallsVo"/>
+        where hall_id = #{hallId}
+    </select>
+
+    <insert id="insertHalls" parameterType="Halls" useGeneratedKeys="true" keyProperty="hallId">
+        insert into halls
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cinemaId != null">cinema_id,</if>
+            <if test="capacity != null">capacity,</if>
+            <if test="seatLayout != null">seat_layout,</if>
+            <if test="hallType != null">hall_type,</if>
+            <if test="facilities != null">facilities,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cinemaId != null">#{cinemaId},</if>
+            <if test="capacity != null">#{capacity},</if>
+            <if test="seatLayout != null">#{seatLayout},</if>
+            <if test="hallType != null">#{hallType},</if>
+            <if test="facilities != null">#{facilities},</if>
+         </trim>
+    </insert>
+
+    <update id="updateHalls" parameterType="Halls">
+        update halls
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="cinemaId != null">cinema_id = #{cinemaId},</if>
+            <if test="capacity != null">capacity = #{capacity},</if>
+            <if test="seatLayout != null">seat_layout = #{seatLayout},</if>
+            <if test="hallType != null">hall_type = #{hallType},</if>
+            <if test="facilities != null">facilities = #{facilities},</if>
+        </trim>
+        where hall_id = #{hallId}
+    </update>
+
+    <delete id="deleteHallsByHallId" parameterType="Long">
+        delete from halls where hall_id = #{hallId}
+    </delete>
+
+    <delete id="deleteHallsByHallIds" parameterType="String">
+        delete from halls where hall_id in 
+        <foreach item="hallId" collection="array" open="(" separator="," close=")">
+            #{hallId}
+        </foreach>
+    </delete>
+</mapper>
