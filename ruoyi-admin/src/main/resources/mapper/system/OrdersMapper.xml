@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.OrdersMapper">
+    
+    <resultMap type="Orders" id="OrdersResult">
+        <result property="orderId"    column="order_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="scheduleId"    column="schedule_id"    />
+        <result property="ticketCount"    column="ticket_count"    />
+        <result property="totalAmount"    column="total_amount"    />
+        <result property="paymentStatus"    column="payment_status"    />
+        <result property="paymentTime"    column="payment_time"    />
+        <result property="orderTime"    column="order_time"    />
+    </resultMap>
+
+    <sql id="selectOrdersVo">
+        select order_id, user_id, schedule_id, ticket_count, total_amount, payment_status, payment_time, order_time from orders
+    </sql>
+
+    <select id="selectOrdersList" parameterType="Orders" resultMap="OrdersResult">
+        <include refid="selectOrdersVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="scheduleId != null "> and schedule_id = #{scheduleId}</if>
+            <if test="ticketCount != null "> and ticket_count = #{ticketCount}</if>
+            <if test="totalAmount != null "> and total_amount = #{totalAmount}</if>
+            <if test="paymentStatus != null  and paymentStatus != ''"> and payment_status = #{paymentStatus}</if>
+            <if test="paymentTime != null "> and payment_time = #{paymentTime}</if>
+            <if test="orderTime != null "> and order_time = #{orderTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectOrdersByOrderId" parameterType="Long" resultMap="OrdersResult">
+        <include refid="selectOrdersVo"/>
+        where order_id = #{orderId}
+    </select>
+
+    <insert id="insertOrders" parameterType="Orders" useGeneratedKeys="true" keyProperty="orderId">
+        insert into orders
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="scheduleId != null">schedule_id,</if>
+            <if test="ticketCount != null">ticket_count,</if>
+            <if test="totalAmount != null">total_amount,</if>
+            <if test="paymentStatus != null">payment_status,</if>
+            <if test="paymentTime != null">payment_time,</if>
+            <if test="orderTime != null">order_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="scheduleId != null">#{scheduleId},</if>
+            <if test="ticketCount != null">#{ticketCount},</if>
+            <if test="totalAmount != null">#{totalAmount},</if>
+            <if test="paymentStatus != null">#{paymentStatus},</if>
+            <if test="paymentTime != null">#{paymentTime},</if>
+            <if test="orderTime != null">#{orderTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOrders" parameterType="Orders">
+        update orders
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="scheduleId != null">schedule_id = #{scheduleId},</if>
+            <if test="ticketCount != null">ticket_count = #{ticketCount},</if>
+            <if test="totalAmount != null">total_amount = #{totalAmount},</if>
+            <if test="paymentStatus != null">payment_status = #{paymentStatus},</if>
+            <if test="paymentTime != null">payment_time = #{paymentTime},</if>
+            <if test="orderTime != null">order_time = #{orderTime},</if>
+        </trim>
+        where order_id = #{orderId}
+    </update>
+
+    <delete id="deleteOrdersByOrderId" parameterType="Long">
+        delete from orders where order_id = #{orderId}
+    </delete>
+
+    <delete id="deleteOrdersByOrderIds" parameterType="String">
+        delete from orders where order_id in 
+        <foreach item="orderId" collection="array" open="(" separator="," close=")">
+            #{orderId}
+        </foreach>
+    </delete>
+</mapper>
